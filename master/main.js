@@ -8,8 +8,7 @@ const fs = require('fs');
 const app = express();
 
 const {
-    PORT,
-    MOUNT_PATH
+    PORT
 } = process.env;
 
 
