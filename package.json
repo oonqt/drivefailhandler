@@ -1,0 +1,30 @@
+{
+  "name": "drivefailhandler",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start-master": "node master/main.js",
+    "dev-master": "nodemon master/main.js",
+    "start-slave": "node slave/main.js",
+    "dev-slave": "nodemon slave/main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oonqt/drivefailhandler.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/oonqt/drivefailhandler/issues"
+  },
+  "homepage": "https://github.com/oonqt/drivefailhandler#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  },
+  "dependencies": {
+    "axios": "^1.12.2",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0"
+  }
+}
