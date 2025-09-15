@@ -5,27 +5,28 @@ if (process.env.NODE_ENV === 'development') require('dotenv').config();
 
 const logger = new Logger('DriveFailHandler');
 const fs = require('fs');
+const path = require('path');
 const app = express();
 
 const {
-    PORT
+    PORT,
+    MOUNT_DIR
 } = process.env;
 
 
-app.get('/mounts', (req, res) => {
-    const data = fs.readFileSync('/proc/mounts', 'utf8');
-    const mounts = [];
+app.get('/availablemounts', (req, res) => {
+    const mounts = fs.readdirSync(MOUNT_DIR);
+    const availableMounts = [];
 
-    data.split('\n').forEach(line => {
-        line = line.split(' ');
+    mounts.forEach(mount => {
+        const absPath = path.join(MOUNT_DIR, mount);
 
-        // filter only physical devices
-        if (line[0].startsWith('/dev')) mounts.push(line[1]);
+        if (fs.existsSync(path.join(absPath, '.drivemonitor', 'readtest'))) {
+            availableMounts.push(absPath);
+        }
     });
 
-
-    logger.info(data);
-    res.json({ mounts });
+    res.json({ availableMounts });
 });
 
 app.listen(PORT, () => logger.info(`Listening on ${PORT}`));
