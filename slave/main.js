@@ -13,7 +13,8 @@ const {
     CHECK_INTERVAL,
     SHUTDOWN_GRACE_PERIOD,
     REQUIRED_MOUNTS,
-    DISCORD_WEBHOOK
+    DISCORD_WEBHOOK,
+    SHUTDOWN_DRIVE_DURATION
 } = process.env;
 
 const logger = new Logger('DriveFailHandler-Slave');
@@ -38,6 +39,8 @@ const main = async () => {
             await sleep(SHUTDOWN_GRACE_PERIOD);
 
             // trigger smart plug
+
+            await sleep(SHUTDOWN_DRIVE_DURATION);
 
             logger.info('Performed drive bay power cycle. Sending WOL packet.');
             await wol(HEART_MAC, {
