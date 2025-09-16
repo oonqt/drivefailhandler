@@ -42,9 +42,8 @@ app.post('/shutdown', (req, res) => {
     logger.info(`Shutting down host requested by ${req.ip}`);
 
     exec(`ssh -i ${SSH_KEY_PATH} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${SSH_SERVER_STRING}`, (err, std, str) => {
-        console.log(err);
-        console.log(std);
-        console.log(str);
+        if (err) logger.error(err);
+        if (str) logger.error(str);
     });
 });
 
