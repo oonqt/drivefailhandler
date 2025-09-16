@@ -30,7 +30,7 @@ app.get('/availablemounts', (req, res) => {
     mounts.forEach(mount => {
         const absPath = path.join(MOUNT_DIR, mount);
 
-        if (fs.existsSync(path.join(absPath, '.drivemonitor', 'readtest'))) {
+        if (fs.existsSync(path.join(absPath, 'readtest'))) {
             availableMounts.push(absPath);
         }
     });
