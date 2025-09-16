@@ -17,6 +17,8 @@ const {
     SSH_SERVER_STRING
 } = process.env;
 
+app.get('/health', (req, res) => res.sendStatus(200));
+
 app.use((req, res, next) => {
     if (!req.ip.includes(ALLOWED_ORIGIN_IP)) return res.sendStatus(401);
 
