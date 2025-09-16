@@ -42,7 +42,7 @@ const main = async () => {
             logger.info('Detected one or more drives became unavailable. Performing full system power cycle.');
 
             logger.info('Performing remote system shutdown');
-            // await axios.post(`${MASTER_MONITOR_ADDR}/shutdown`);
+            await axios.post(`${MASTER_MONITOR_ADDR}/shutdown`);
             logger.info(`System shutdown command sent. Sleeping for ${SHUTDOWN_GRACE_PERIOD}`);
             await sleep(SHUTDOWN_GRACE_PERIOD);
 
