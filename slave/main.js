@@ -50,7 +50,7 @@ const main = async () => {
 
             const enclosurePlug = await tplink.getDevice({ host: PLUG_ADDRESS });
             await enclosurePlug.setPowerState(false);
-            await sleep(ms(SHUTDOWN_DRIVE_DURATION));
+            await sleep(SHUTDOWN_DRIVE_DURATION);
             await enclosurePlug.setPowerState(true);
 
             logger.info('Completed drive enclosure power cycle. Sending WOL packet.');
