@@ -7,7 +7,7 @@ RUN apk add --no-cache openssh
 WORKDIR /usr/src/app/
 
 COPY package*.json ./
-RUN npm install --production
+RUN npm install --omit=dev
 
 COPY . .
 
