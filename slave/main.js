@@ -56,7 +56,8 @@ const main = async () => {
             logger.info('Completed drive enclosure power cycle. Sending WOL packet.');
             await wol(HEART_MAC, {
                 count: 6,
-                internal: 250
+                interval: 250,
+                address: "192.168.1.255"
             });
             logger.info('Sent WOL packet. System should be good to go now.');
         } else {
