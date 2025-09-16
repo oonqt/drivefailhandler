@@ -40,11 +40,13 @@ app.get('/availablemounts', (req, res) => {
 
 app.post('/shutdown', (req, res) => {
     logger.info(`Shutting down host requested by ${req.ip}`);
-
+    
     exec(`ssh -i ${SSH_KEY_PATH} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${SSH_SERVER_STRING}`, (err, std, str) => {
         if (err) logger.error(err);
         if (str) logger.error(str);
     });
+    
+    res.sendStatus(200);
 });
 
 app.listen(PORT, () => logger.info(`Listening on ${PORT}`));
