@@ -38,7 +38,7 @@ const main = async () => {
         const requiredMounts = REQUIRED_MOUNTS.split(',').map(l => l.trim());
 
         if (!requiredMounts.every(mount => availableMounts.includes(mount))) {
-            webhook.send('Detected one or more drives became unavailable. Performing full system power cycle.').catch(logger.error);
+            webhook.send('@everyone Detected one or more drives became unavailable. Performing full system power cycle.').catch(logger.error);
             logger.info('Detected one or more drives became unavailable. Performing full system power cycle.');
 
             logger.info('Performing remote system shutdown');
