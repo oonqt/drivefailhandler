@@ -8,7 +8,7 @@ class Logger {
     }
     
     error(...msg) {
-        console.error(new Date().toISOString(), `[${this.procname}] ERROR:`, ...msg);
+        console.info(new Date().toISOString(), `[${this.procname}] ERROR:`, ...msg);
     }
 }
 
