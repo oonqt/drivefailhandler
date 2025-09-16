@@ -3,12 +3,12 @@ class Logger {
         this.procname = procname;
     }
     
-    info(...msg) {
+    info = (...msg) => {
         console.info(new Date().toISOString(), `[${this.procname}] INFO:`, ...msg);  
     }
     
-    error(...msg) {
-        console.info(new Date().toISOString(), `[${this.procname}] ERROR:`, ...msg);
+    error = (...msg) => {
+        console.error(new Date().toISOString(), `[${this.procname}] ERROR:`, ...msg);
     }
 }
 
