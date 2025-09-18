@@ -1,8 +1,8 @@
 const express = require('express');
-const { exec } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const Logger = require('../logger');
+const { version } = require('../package.json');
 
 if (process.env.NODE_ENV === 'development') require('dotenv').config();
 
@@ -12,18 +12,9 @@ const app = express();
 const {
     PORT,
     MOUNT_DIR,
-    ALLOWED_ORIGIN_IP,
-    SSH_KEY_PATH,
-    SSH_SERVER_STRING
 } = process.env;
 
 app.get('/health', (req, res) => res.sendStatus(200));
-
-app.use((req, res, next) => {
-    if (!req.ip.includes(ALLOWED_ORIGIN_IP)) return res.sendStatus(401);
-
-    next();
-});
 
 app.get('/availablemounts', (req, res) => {
     const mounts = fs.readdirSync(MOUNT_DIR);
@@ -40,15 +31,4 @@ app.get('/availablemounts', (req, res) => {
     res.json({ availableMounts });
 });
 
-app.post('/shutdown', (req, res) => {
-    logger.info(`Shutting down host requested by ${req.ip}`);
-    
-    exec(`ssh -i ${SSH_KEY_PATH} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${SSH_SERVER_STRING}`, (err, std, str) => {
-        if (err) logger.error(err);
-        if (str) logger.error(str);
-    });
-    
-    res.sendStatus(200);
-});
-
-app.listen(PORT, () => logger.info(`Listening on ${PORT}`));
+app.listen(PORT, () => logger.info(`Master application (v${version}) listening on ${PORT}`));
