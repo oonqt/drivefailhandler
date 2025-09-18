@@ -1,6 +1,6 @@
 {
   "name": "drivefailhandler",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "scripts": {
     "start-master": "node master/main.js",
