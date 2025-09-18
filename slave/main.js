@@ -1,17 +1,19 @@
 const wol = require('wakeonlan');
 const express = require('express');
 const axios = require('axios');
+const exec = require('exec');
 const ms = require('ms');
 const { Client } = require('tplink-smarthome-api');
 const { Webhook } = require('discord-webhook-node');
 const Logger = require('../logger');
+const { version } = require('../package.json');
 
 if (process.env.NODE_ENV === 'development') require('dotenv').config();
 
 
 const {
-    MASTER_MONITOR_ADDR,
-    HEART_MAC,
+    MASTER_ADDR,
+    MASTER_MAC,
     CHECK_INTERVAL,
     SHUTDOWN_GRACE_PERIOD,
     REQUIRED_MOUNTS,
@@ -34,7 +36,7 @@ const main = async () => {
     logger.info('Checking drive presence...');
 
     try {
-        const availableMounts = (await axios(`${MASTER_MONITOR_ADDR}/availablemounts`)).data.availableMounts;
+        const availableMounts = (await axios(`http://${MASTER_ADDR}:${PORT}/availablemounts`)).data.availableMounts;
         const requiredMounts = REQUIRED_MOUNTS.split(',').map(l => l.trim());
 
         if (!requiredMounts.every(mount => availableMounts.includes(mount))) {
@@ -42,7 +44,11 @@ const main = async () => {
             logger.info('Detected one or more drives became unavailable. Performing full system power cycle.');
 
             logger.info('Performing remote system shutdown');
-            await axios.post(`${MASTER_MONITOR_ADDR}/shutdown`);
+            // await axios.post(`${masterURL}/shutdown`);
+
+
+
+
             logger.info(`System shutdown command sent. Sleeping for ${SHUTDOWN_GRACE_PERIOD}`);
             await sleep(SHUTDOWN_GRACE_PERIOD);
 
@@ -54,7 +60,7 @@ const main = async () => {
             await enclosurePlug.setPowerState(true);
 
             logger.info('Completed drive enclosure power cycle. Sending WOL packet.');
-            await wol(HEART_MAC, {
+            await wol(MASTER_MAC, {
                 count: 6,
                 interval: 250
             });
@@ -71,5 +77,5 @@ const main = async () => {
 
 app.listen(PORT, () => logger.info(`Healthcheck webserver up on port ${PORT}`));
 
-logger.info('Starting slave application...');
+logger.info(`Starting slave application v${version}...`);
 main();
