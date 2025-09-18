@@ -1,7 +1,7 @@
 const wol = require('wakeonlan');
 const express = require('express');
 const axios = require('axios');
-const exec = require('exec');
+const { exec } = require('child_process');
 const ms = require('ms');
 const { Client } = require('tplink-smarthome-api');
 const { Webhook } = require('discord-webhook-node');
@@ -20,7 +20,9 @@ const {
     DISCORD_WEBHOOK,
     SHUTDOWN_DRIVE_DURATION,
     PORT,
-    PLUG_ADDRESS
+    PLUG_ADDRESS,
+    MASTER_SSH_USER,
+    SSH_KEY_PATH
 } = process.env;
 
 const tplink = new Client();
@@ -44,10 +46,11 @@ const main = async () => {
             logger.info('Detected one or more drives became unavailable. Performing full system power cycle.');
 
             logger.info('Performing remote system shutdown');
-            // await axios.post(`${masterURL}/shutdown`);
 
-
-
+            exec(`ssh -i ${SSH_KEY_PATH} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ${MASTER_SSH_USER}@${MASTER_ADDR}`, (err, std, str) => {
+                if (err) logger.error(err);
+                if (str) logger.error(str);
+            });
 
             logger.info(`System shutdown command sent. Sleeping for ${SHUTDOWN_GRACE_PERIOD}`);
             await sleep(SHUTDOWN_GRACE_PERIOD);
