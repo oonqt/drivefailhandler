@@ -1,15 +1,14 @@
 const wol = require('wakeonlan');
 const express = require('express');
 const axios = require('axios');
-const { exec } = require('child_process');
 const ms = require('ms');
+const { MessagePriority, publish } = require('ntfy');
 const { Client } = require('tplink-smarthome-api');
-const { Webhook } = require('discord-webhook-node');
-const Logger = require('../logger');
+const { exec } = require('child_process');
 const { version } = require('../package.json');
+const Logger = require('../logger');
 
 if (process.env.NODE_ENV === 'development') require('dotenv').config();
-
 
 const {
     MASTER_ADDR,
@@ -22,15 +21,17 @@ const {
     PORT,
     PLUG_ADDRESS,
     MASTER_SSH_USER,
-    SSH_KEY_PATH
+    SSH_KEY_PATH,
+    NTFY_SERVER,
+    NTFY_TOKEN,
+    NTFY_TOPIC
 } = process.env;
 
 const tplink = new Client();
-const webhook = new Webhook(DISCORD_WEBHOOK);
 const logger = new Logger('DriveFailHandler-Slave');
 
 const app = express();
-app.get('/health', (req,res) => res.sendStatus(200));
+app.get('/health', (_,res) => res.sendStatus(200));
 
 const sleep = (time) => new Promise(resolve => setTimeout(resolve, ms(time)));
 
@@ -41,8 +42,18 @@ const main = async () => {
         const availableMounts = (await axios(`http://${MASTER_ADDR}:${PORT}/availablemounts`)).data.availableMounts;
         const requiredMounts = REQUIRED_MOUNTS.split(',').map(l => l.trim());
 
+        
         if (!requiredMounts.every(mount => availableMounts.includes(mount))) {
-            webhook.send('@everyone Detected one or more drives became unavailable. Performing full system power cycle.').catch(logger.error);
+            publish({
+                server: NTFY_SERVER,
+                priority: MessagePriority.MAX,
+                topic: NTFY_TOPIC,
+                authorization: `Bearer ${NTFY_TOKEN}`,
+                tags: ['floppy_disk'],
+                title: 'Drive Failure Detected',
+                message: 'Detected one or more drives became unavailable. Performing full system & drive enclosure power cycle.'
+            }).catch(logger.error);
+
             logger.info('Detected one or more drives became unavailable. Performing full system power cycle.');
 
             logger.info('Performing remote system shutdown');
